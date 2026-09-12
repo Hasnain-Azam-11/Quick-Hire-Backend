@@ -65,3 +65,20 @@ class JobPost(models.Model):
         return f"{self.category} job by {self.client.user.username} - {self.city}"
 
 
+class Category(models.Model):
+    """
+    A real model (not just a choices list) - needed because WorkerBio uses a
+    ManyToMany relationship (a worker can be expert in multiple categories),
+    and M2M only works against an actual model, not a CharField choices list.
+
+    JobPost and WorkerService still use CATEGORY_CHOICES as a simple CharField
+    (a job/service belongs to exactly ONE category), so this doesn't replace
+    that - it's specifically for the multi-category expertise case.
+    """
+    name = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
+    def __str__(self):
+        return self.name

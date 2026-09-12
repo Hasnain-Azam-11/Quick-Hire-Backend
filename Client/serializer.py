@@ -43,7 +43,7 @@ class PostjobSerializer(serializers.ModelSerializer):
         model = JobPost
         fields = [
             'id', 'client', 'job_description', 'city', 'area', 'category',
-            'price', 'duration', 'start_date', 'status', 'assigned_worker',
+            'price', 'duration', 'start_date', 'status',
             'created_at', 'updated_at',
         ]
         # 'client' set automatically in the view from request.user - never
