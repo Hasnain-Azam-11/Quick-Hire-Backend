@@ -1,6 +1,11 @@
-from Client.urls import urlpatterns,path
-from .views import WorkerBioView , WorkerServiceView
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from .views import WorkerBioView, WorkerServiceView
+
 router = DefaultRouter()
-router.register('workerBio',WorkerBioView,'workerBio')
-router.register('workerService',WorkerServiceView, 'workerService')
+router.register('workerBio', WorkerBioView, basename='workerBio')
+router.register('workerService', WorkerServiceView, basename='workerService')
+
+urlpatterns = [
+    path('', include(router.urls)),
+]

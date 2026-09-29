@@ -3,18 +3,18 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 CATEGORY_CHOICES = [
-        ('Driving', 'Driving'),
-        ('Moving', 'Moving'),
-        ('Handyman', 'Handyman'),
-        ('Childcare', 'Childcare'),
-        ('Elder Care', 'Elder Care'),
-        ('Event Staffing', 'Event Staffing'),
-        ('Cooking', 'Cooking'),
-        ('Construction', 'Construction'),
-        ('Security', 'Security'),
-        ('Gardening', 'Gardening'),
-        ('Tutoring', 'Tutoring'),
-        ('Beauty', 'Beauty'),
+('driving', 'Driving'),
+    ('moving', 'Moving'),
+    ('handyman', 'Handyman'),
+    ('caregiving', 'Care Giving'),
+    ('event_staffing', 'Event Staffing'),
+    ('cooking', 'Cooking'),
+    ('construction', 'Construction'),
+    ('security', 'Security'),
+    ('gardening', 'Gardening'),
+    ('tutoring', 'Tutoring'),
+    ('beauty', 'Beauty'),
+    ('cleaning', 'Cleaning'),
     ]
 
 JOB_STATUS_CHOICES = [

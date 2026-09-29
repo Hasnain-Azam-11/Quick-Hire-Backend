@@ -1,6 +1,9 @@
 from rest_framework import generics, permissions, viewsets
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.exceptions import PermissionDenied
+
 from .models import ClientProfile, JobPost
-from .serializer import ClientProfileSerializer,PostjobSerializer  # ✅ serializer → serializers (import name)
+from .serializer import ClientProfileSerializer, PostjobSerializer
 from .permissions import IsJobOwnerOrReadOnly
 
 
@@ -16,4 +19,8 @@ class PostjobView(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsJobOwnerOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save(client=self.request.user.client_profile)
+        try:
+            client = self.request.user.client_profile
+        except ObjectDoesNotExist:
+            raise PermissionDenied("Only clients can post jobs.")
+        serializer.save(client=client)
