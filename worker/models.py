@@ -1,8 +1,7 @@
-from unicodedata import category
-
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from Client.models import CATEGORY_CHOICES, ClientProfile, Category
+
+from Client.models import CATEGORY_CHOICES, ClientProfile
 
 
 GENDER_CHOICES = [
@@ -10,21 +9,6 @@ GENDER_CHOICES = [
     ('F', 'Female'),
     ('O', 'Other'),
 ]
-CATEGORY_EXPERTISE_CHOICES = [
-    ('driving', 'Driving'),
-    ('moving', 'Moving'),
-    ('handyman', 'Handyman'),
-    ('caregiving', 'Care Giving'),
-    ('event_staffing', 'Event Staffing'),
-    ('cooking', 'Cooking'),
-    ('construction', 'Construction'),
-    ('security', 'Security'),
-    ('gardening', 'Gardening'),
-    ('tutoring', 'Tutoring'),
-    ('beauty', 'Beauty'),
-    ('cleaning', 'Cleaning'),
-]
-
 
 
 class WorkerBio(models.Model):
@@ -40,7 +24,7 @@ class WorkerBio(models.Model):
 
     years_of_experience = models.PositiveIntegerField(default=0, help_text="Total years of experience")
 
-    expertise_categories = models.CharField(choices=CATEGORY_EXPERTISE_CHOICES , null=True,blank=True)
+    expertise_categories = models.CharField(max_length=50, choices=CATEGORY_CHOICES, null=True, blank=True)
 
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
     bio = models.TextField(blank=True, help_text="Short description about yourself")
