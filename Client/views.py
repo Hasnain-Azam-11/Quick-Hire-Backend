@@ -19,7 +19,7 @@ class ClientRegistrationView(generics.CreateAPIView):
 
 
 class PostjobView(viewsets.ModelViewSet):
-    queryset = JobPost.objects.all()
+    queryset = JobPost.objects.select_related('client__user')
     serializer_class = PostjobSerializer
     permission_classes = [permissions.IsAuthenticated, IsJobOwnerOrReadOnly]
 

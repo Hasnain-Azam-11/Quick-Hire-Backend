@@ -51,10 +51,14 @@ class ClientProfileSerializer(serializers.ModelSerializer):
 
 
 class PostjobSerializer(serializers.ModelSerializer):
+    client_username = serializers.CharField(source = 'client.user.username' , read_only=True)
+    client_picture = serializers.ImageField(source = 'client.profile_picture',read_only=True)
+    client_rating = serializers.DecimalField(source = 'client.average_rating',read_only=True,max_digits=3,decimal_places=2)
     class Meta:
         model = JobPost
         fields = [
-            'id', 'client', 'job_description', 'city', 'area', 'category',
+            'id', 'client', 'client_username', 'client_picture', 'client_rating',
+            'job_description', 'city', 'area', 'category',
             'price', 'duration', 'start_date', 'status',
             'created_at', 'updated_at',
         ]

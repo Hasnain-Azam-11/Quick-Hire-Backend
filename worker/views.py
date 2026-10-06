@@ -28,7 +28,7 @@ class WorkerBioView(viewsets.ModelViewSet):
 
 
 class WorkerServiceView(viewsets.ModelViewSet):
-    queryset = WorkerService.objects.all()
+    queryset = WorkerService.objects.select_related('worker__client_profile__user')
     serializer_class = WorkerServiceSerializer
     permission_classes = [permissions.IsAuthenticated,IsWorkerServiceOrReadOnly]
 
