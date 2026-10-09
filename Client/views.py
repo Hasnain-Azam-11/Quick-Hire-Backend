@@ -1,6 +1,10 @@
+import django_filters
+from django.template.context_processors import request
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, viewsets
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.filters import OrderingFilter
 
 from . import serializer
 from .models import ClientProfile, JobPost
@@ -10,6 +14,10 @@ from .permissions import IsJobOwnerOrReadOnly
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+
+from .ClientFilters import JobPostFilters
+from .pagination import JobPagination
+
 
 
 class ClientRegistrationView(generics.CreateAPIView):
@@ -22,6 +30,23 @@ class PostjobView(viewsets.ModelViewSet):
     queryset = JobPost.objects.select_related('client__user')
     serializer_class = PostjobSerializer
     permission_classes = [permissions.IsAuthenticated, IsJobOwnerOrReadOnly]
+    filter_backends = [DjangoFilterBackend , OrderingFilter]
+    filterset_class = JobPostFilters
+    ordering_fields = ['created_at' , 'price' , 'start_date']
+    pagination_class = JobPagination
+
+    def get_queryset(self):
+        query_set = JobPost.objects.select_related('client__user')
+        mine = self.request.query_params.get('mine' , None)
+
+        if mine == 'true':
+            try:
+                client_profile =  self.request.user.client_profile
+            except ObjectDoesNotExist:
+                return query_set.none()
+            query_set = query_set.filter(client = client_profile)
+        return query_set
+
 
     def perform_create(self, serializer):
         try:
@@ -29,6 +54,8 @@ class PostjobView(viewsets.ModelViewSet):
         except ObjectDoesNotExist:
             raise PermissionDenied("Only clients can post jobs.")
         serializer.save(client=client)
+
+
 
 class MeView(generics.RetrieveUpdateAPIView):
 
