@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from .models import ClientProfile, JobPost
+from datetime import date
 
 
 class ClientProfileSerializer(serializers.ModelSerializer):
@@ -63,6 +64,42 @@ class PostjobSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at',
         ]
         read_only_fields = ['client', 'created_at', 'updated_at']
+
+    def validate_start_date(self, value):
+        today = date.today()
+        if value < today:
+            raise serializers.ValidationError("Start date can not be in the past")
+        return value
+    def validate_price(self,value):
+        if value <= 0:
+            raise serializers.ValidationError("Enter a valid price greater than Zero")
+        return value
+    def validate_duration(self,value):
+        if value in ['Event' , 'Task' , 'Session' , 'Permanent']:
+            return value
+        parts = value.split()
+        units = ['hours' , 'hour' , 'day' , 'days' , 'month' , 'months' , 'year' , 'years' , 'week' , 'weeks']
+        if len(parts) == 2 and parts[0].isdigit() and parts[1] in units:
+            return value
+        raise serializers.ValidationError("Enter a valid duration, e.g. '3 days' or 'Event'.")
+
+    def validate_status(self, value):
+        # New job: it must start as open
+        if self.instance is None:
+            if value != 'open':
+                raise serializers.ValidationError("A new job must start as open.")
+            return value
+
+        old_status = self.instance.status
+
+        # A finished job cannot change any more
+        if old_status in ['completed', 'cancelled'] and value != old_status:
+            raise serializers.ValidationError("This job is already finished and cannot be changed.")
+
+        return value
+
+
+
 
 
 class MeSerializer(serializers.ModelSerializer):
