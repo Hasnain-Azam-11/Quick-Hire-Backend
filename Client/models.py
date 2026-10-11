@@ -43,6 +43,7 @@ class ClientProfile(models.Model):
 class JobPost(models.Model):
 
     client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, related_name='job_posts')
+    title = models.CharField(max_length=100)
     job_description = models.TextField()
     city = models.CharField(max_length=100)
     area = models.CharField(max_length=100)

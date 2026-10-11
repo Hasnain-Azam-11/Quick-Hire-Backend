@@ -58,7 +58,7 @@ class PostjobSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobPost
         fields = [
-            'id', 'client', 'client_username', 'client_picture', 'client_rating',
+            'id', 'title' ,'client', 'client_username', 'client_picture', 'client_rating',
             'job_description', 'city', 'area', 'category',
             'price', 'duration', 'start_date', 'status',
             'created_at', 'updated_at',
