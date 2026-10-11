@@ -59,7 +59,7 @@ class PostjobSerializer(serializers.ModelSerializer):
         model = JobPost
         fields = [
             'id', 'title' ,'client', 'client_username', 'client_picture', 'client_rating',
-            'job_description', 'city', 'area', 'category',
+            'job_description', 'city', 'area', 'category', 'price_unit'
             'price', 'duration', 'start_date', 'status',
             'created_at', 'updated_at',
         ]

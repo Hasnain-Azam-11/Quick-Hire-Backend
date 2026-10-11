@@ -23,6 +23,14 @@ JOB_STATUS_CHOICES = [
     ('cancelled', 'Cancelled'),
 ]
 
+PRICE_UNIT_CHOICES = [
+    ('hour', 'Per hour'),
+    ('day', 'Per day'),
+    ('week', 'Per week'),
+    ('month', 'Per month'),
+    ('flat', 'Flat (event / task / session)'),
+]
+
 
 class ClientProfile(models.Model):
 
@@ -43,12 +51,13 @@ class ClientProfile(models.Model):
 class JobPost(models.Model):
 
     client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, related_name='job_posts')
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=150)
     job_description = models.TextField()
     city = models.CharField(max_length=100)
     area = models.CharField(max_length=100)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     price = models.DecimalField(max_digits=10, decimal_places=2, help_text="Fair/price offered by client")
+    price_unit = models.CharField(max_length=10, choices=PRICE_UNIT_CHOICES)
     duration = models.CharField(max_length=100, help_text="e.g. '2 hours', '3 days'")
     start_date = models.DateField()
     status = models.CharField(max_length=20, choices=JOB_STATUS_CHOICES, default='open')
@@ -60,4 +69,4 @@ class JobPost(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.category} job by {self.client.user.username} - {self.city}"
+        return f"{self.title} by {self.client.user.username} - {self.city}"
