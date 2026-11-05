@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
-from Client.models import CATEGORY_CHOICES, ClientProfile
+from Client.models import CATEGORY_CHOICES, PRICE_UNIT_CHOICES, ClientProfile
 
 
 GENDER_CHOICES = [
@@ -47,6 +46,8 @@ class WorkerService(models.Model):
     city = models.CharField(max_length=100)
     area = models.CharField(max_length=100)
     rate = models.DecimalField(max_digits=10, decimal_places=2, help_text="Worker's own asking rate/price")
+    # Unit for the worker's asking rate (hour, day, week, month, flat)
+    price_unit = models.CharField(max_length=10, choices=PRICE_UNIT_CHOICES)
     is_available = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

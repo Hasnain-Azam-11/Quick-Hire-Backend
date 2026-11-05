@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'Client',
     'worker',
-    
+    'hiring',
+
     'django_filters'
 ]
 

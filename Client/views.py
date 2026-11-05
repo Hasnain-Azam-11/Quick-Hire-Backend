@@ -32,7 +32,7 @@ class PostjobView(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsJobOwnerOrReadOnly]
     filter_backends = [DjangoFilterBackend , OrderingFilter]
     filterset_class = JobPostFilters
-    ordering_fields = ['created_at' , 'price' , 'start_date']
+    ordering_fields = ['created_at'  , 'start_date']
     pagination_class = JobPagination
 
     def get_queryset(self):
@@ -89,7 +89,7 @@ class LoginView(ObtainAuthToken):
         return Response( {
             'token' : token.key,
             'client_profile_id' : client_profile.id if client_profile else None,
-            'worker_Bio_id' : worker_bio.id if worker_bio else None,
+            'worker_bio_id' : worker_bio.id if worker_bio else None,
             'is_worker' : worker_bio is not None,
         })
 

@@ -34,9 +34,14 @@ class WorkerServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkerService
         fields = [
-            'id', 'worker','category', 'job_description', 'city', 'area', 'rate',
-            'is_available', 'created_at', 'updated_at', 'worker_username' , 'worker_picture','worker_is_verified' ,
-            'worker_average_rating' , 'worker_years_of_experience'
+            'id', 'worker', 'category', 'job_description', 'city', 'area', 'rate', 'price_unit',
+            'is_available', 'created_at', 'updated_at', 'worker_username', 'worker_picture', 'worker_is_verified',
+            'worker_average_rating', 'worker_years_of_experience'
         ]
 
-        read_only_fields = ['worker','created_at', 'updated_at']
+        read_only_fields = ['worker', 'created_at', 'updated_at']
+
+    def validate_rate(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Enter a valid rate greater than zero.")
+        return value

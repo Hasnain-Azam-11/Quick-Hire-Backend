@@ -13,6 +13,7 @@ urlpatterns = [
     path('Client/', include('Client.urls')),
     path('api-token-auth/', LoginView.as_view(), name='login'),
     path('worker/', include('worker.urls')),
+    path('hiring/', include('hiring.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

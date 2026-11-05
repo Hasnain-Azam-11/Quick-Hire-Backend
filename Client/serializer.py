@@ -59,8 +59,8 @@ class PostjobSerializer(serializers.ModelSerializer):
         model = JobPost
         fields = [
             'id', 'title' ,'client', 'client_username', 'client_picture', 'client_rating',
-            'job_description', 'city', 'area', 'category', 'price_unit'
-            'price', 'duration', 'start_date', 'status',
+            'job_description', 'city', 'area', 'category',
+            'duration_unit', 'duration', 'start_date', 'status',
             'created_at', 'updated_at',
         ]
         read_only_fields = ['client', 'created_at', 'updated_at']
@@ -70,10 +70,7 @@ class PostjobSerializer(serializers.ModelSerializer):
         if value < today:
             raise serializers.ValidationError("Start date can not be in the past")
         return value
-    def validate_price(self,value):
-        if value <= 0:
-            raise serializers.ValidationError("Enter a valid price greater than Zero")
-        return value
+
     def validate_duration(self,value):
         if value in ['Event' , 'Task' , 'Session' , 'Permanent']:
             return value

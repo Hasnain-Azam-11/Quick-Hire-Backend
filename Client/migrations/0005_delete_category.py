@@ -7,6 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('Client', '0004_alter_jobpost_category'),
+        ('worker', '0002_remove_workerbio_expertise_categories_and_more'),
     ]
 
     operations = [

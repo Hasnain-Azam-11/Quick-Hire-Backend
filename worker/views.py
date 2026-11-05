@@ -9,13 +9,14 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.filters import SearchFilter
 from .filters import WorkerServiceFilter
 # from Client import permissions, serializer
-from .workerSerializer import WorkerBioOwnerSerializer,WorkerBioPublicSerializer,WorkerServiceSerializer
-from .models import WorkerBio,WorkerService
-from .workerPermissions import IsWorkerBioOrReadOnly,IsWorkerServiceOrReadOnly
+from .workerSerializer import WorkerBioOwnerSerializer, WorkerBioPublicSerializer, WorkerServiceSerializer
+from .models import WorkerBio, WorkerService
+from .workerPermissions import IsWorkerBioOrReadOnly, IsWorkerServiceOrReadOnly
+
 # Create your views here.
 class WorkerBioView(viewsets.ModelViewSet):
     queryset = WorkerBio.objects.all()
-    permission_classes = [permissions.IsAuthenticated , IsWorkerBioOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsWorkerBioOrReadOnly]
 
     def perform_create(self, serializer):
         try:

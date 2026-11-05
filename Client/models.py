@@ -23,6 +23,8 @@ JOB_STATUS_CHOICES = [
     ('cancelled', 'Cancelled'),
 ]
 
+# Shared time/billing unit choices used across JobPost (duration_unit),
+# WorkerService (price_unit), and hiring Deals/Offers.
 PRICE_UNIT_CHOICES = [
     ('hour', 'Per hour'),
     ('day', 'Per day'),
@@ -30,6 +32,7 @@ PRICE_UNIT_CHOICES = [
     ('month', 'Per month'),
     ('flat', 'Flat (event / task / session)'),
 ]
+
 
 
 class ClientProfile(models.Model):
@@ -56,8 +59,9 @@ class JobPost(models.Model):
     city = models.CharField(max_length=100)
     area = models.CharField(max_length=100)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    price = models.DecimalField(max_digits=10, decimal_places=2, help_text="Fair/price offered by client")
-    price_unit = models.CharField(max_length=10, choices=PRICE_UNIT_CHOICES)
+    # Client specifies the time unit needed (hour/day/week/month/flat) and duration,
+    # while workers propose the actual price during deal negotiation.
+    duration_unit = models.CharField(max_length=10, choices=PRICE_UNIT_CHOICES)
     duration = models.CharField(max_length=100, help_text="e.g. '2 hours', '3 days'")
     start_date = models.DateField()
     status = models.CharField(max_length=20, choices=JOB_STATUS_CHOICES, default='open')
