@@ -1,10 +1,13 @@
 import django_filters
 from django.template.context_processors import request
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, permissions, viewsets
+from rest_framework import generics, permissions, status, viewsets
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter
+from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from . import serializer
 from .models import ClientProfile, JobPost
@@ -75,6 +78,7 @@ class LoginView(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token , created = Token.objects.get_or_create(user = user)
+        refresh = RefreshToken.for_user(user)
 
         try:
             client_profile = user.client_profile
@@ -87,9 +91,32 @@ class LoginView(ObtainAuthToken):
             worker_bio = None
 
         return Response( {
+            'access' : str(refresh.access_token),
+            'refresh' : str(refresh),
             'token' : token.key,
             'client_profile_id' : client_profile.id if client_profile else None,
             'worker_bio_id' : worker_bio.id if worker_bio else None,
             'is_worker' : worker_bio is not None,
         })
+
+
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.data.get('refresh')
+        if not refresh_token:
+            return Response(
+                {'detail': 'Refresh token is required.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        except TokenError:
+            return Response(
+                {'detail': 'Invalid or expired refresh token.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(status=status.HTTP_205_RESET_CONTENT)
 

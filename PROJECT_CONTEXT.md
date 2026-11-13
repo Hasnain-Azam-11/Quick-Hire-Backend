@@ -3,14 +3,15 @@
 ## 1. Stack & Settings (`config/`)
 - **Stack**: Django 6.1, DRF 3.18, `django-filter`, SQLite (`db.sqlite3`).
 - **Config (`config/`)**: `settings.py`, `urls.py`, `wsgi.py`, `asgi.py`.
-- **Installed Apps**: `Client`, `worker`, `hiring`, `rest_framework`, `rest_framework.authtoken`, `rest_framework_simplejwt` (unused), `corsheaders` (no middleware), `django_filters`.
-- **DRF Settings**: Auth (`TokenAuthentication`, `SessionAuthentication`), Permission (`IsAuthenticated`). Pagination/filters set per view.
+- **Installed Apps**: `Client`, `worker`, `hiring`, `rest_framework`, `rest_framework.authtoken`, `rest_framework_simplejwt`, `rest_framework_simplejwt.token_blacklist`, `corsheaders` (`CorsMiddleware` enabled), `django_filters`.
+- **DRF Settings**: Auth (`JWTAuthentication`, `TokenAuthentication`, `SessionAuthentication`), Permission (`IsAuthenticated`). Pagination/filters set per view.
+- **JWT & CORS Settings**: `ACCESS_TOKEN_LIFETIME=30m`, `REFRESH_TOKEN_LIFETIME=7d`, `ROTATE_REFRESH_TOKENS=True`, `BLACKLIST_AFTER_ROTATION=True`. `CORS_ALLOWED_ORIGINS=['http://localhost:5173', 'http://127.0.0.1:5173']`.
 
 ## 2. Apps & Files
 - **`Client/`**:
   - `models.py`: `ClientProfile`, `JobPost`, choice constants (`CATEGORY_CHOICES`, `JOB_STATUS_CHOICES`, `PRICE_UNIT_CHOICES`).
   - `serializer.py`: `ClientProfileSerializer`, `PostjobSerializer`, `MeSerializer`.
-  - `views.py`: `ClientRegistrationView`, `PostjobView`, `MeView`, `LoginView`.
+  - `views.py`: `ClientRegistrationView`, `PostjobView`, `MeView`, `LoginView`, `LogoutView`.
   - `ClientFilters.py`: `JobPostFilters` filterset.
   - `permissions.py`: `IsJobOwnerOrReadOnly`.
   - `pagination.py`: `JobPagination` (`page_size=10`).
@@ -58,6 +59,8 @@
 ## 4. URLs
 - `POST /Client/registration/` -> `ClientRegistrationView` -> `ClientProfileSerializer` -> `AllowAny`.
 - `POST /api-token-auth/`, `POST /Client/login/` -> `LoginView` -> `AuthTokenSerializer` -> `AllowAny`.
+- `POST /Client/token/refresh/` -> `TokenRefreshView` -> `TokenRefreshSerializer` -> `AllowAny`.
+- `POST /Client/logout/` -> `LogoutView` -> blacklists refresh token (`205 Reset Content`) -> `IsAuthenticated`.
 - `GET, PUT, PATCH /Client/me/` -> `MeView` -> `MeSerializer` -> `IsAuthenticated`.
 - `GET, POST /Client/jobs/`, `GET, PUT, PATCH, DELETE /Client/jobs/<id>/` -> `PostjobView` -> `PostjobSerializer` -> `IsAuthenticated`, `IsJobOwnerOrReadOnly`.
 - `GET, POST /worker/workerBio/`, `GET, PUT, PATCH, DELETE /worker/workerBio/<id>/` -> `WorkerBioView` -> `WorkerBioOwnerSerializer` (write) / `WorkerBioPublicSerializer` (read) -> `IsAuthenticated`, `IsWorkerBioOrReadOnly`.
@@ -78,7 +81,7 @@
 - **`/worker/workerBio/`, `/worker/workerService/`**: None.
 
 ## 6. Auth Flow
-Register via `POST /Client/registration/` (`User` + `ClientProfile`); workers then `POST /worker/workerBio/`. Login (`POST /Client/login/` or `/api-token-auth/`) returns `{"token": "<str>", "client_profile_id": <int|None>, "worker_bio_id": <int|None>, "is_worker": <bool>}`.
+Register via `POST /Client/registration/` (`User` + `ClientProfile`); workers then `POST /worker/workerBio/`. Login (`POST /Client/login/` or `/api-token-auth/`) returns `{"access": "<jwt>", "refresh": "<jwt>", "token": "<str>", "client_profile_id": <int|None>, "worker_bio_id": <int|None>, "is_worker": <bool>}`. Refresh via `POST /Client/token/refresh/` (`{"refresh": "<jwt>"}` -> `{"access": "<jwt>", "refresh": "<jwt>"}`). Logout via `POST /Client/logout/` (`{"refresh": "<jwt>"}` -> `205 Reset Content`).
 
 ## 7. Sensitive Fields
 - `cnic`: In `WorkerBioOwnerSerializer` (write); omitted in `WorkerBioPublicSerializer` (read) and `WorkerServiceSerializer`.
